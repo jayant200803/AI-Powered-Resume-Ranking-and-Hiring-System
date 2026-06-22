@@ -1,0 +1,35 @@
+# Node.js
+client/node_modules/
+server/node_modules/
+npm-debug.log
+yarn-error.log
+
+#FASTAPI
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+ranking_server/venv/
+ranking_server/.venv/
+
+# Client build artifacts
+client/build/
+client/.env
+
+# Server build artifacts
+server/build/
+server/.env
+ranking_server/.env
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

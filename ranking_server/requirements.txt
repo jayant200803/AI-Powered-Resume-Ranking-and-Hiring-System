@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pymongo
+numpy
+scikit-learn
+pandas
+nltk
+python-docx
+pdfminer.six
+xlsxwriter
