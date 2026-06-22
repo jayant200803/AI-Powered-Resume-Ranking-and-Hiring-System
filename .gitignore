@@ -24,6 +24,9 @@ ranking_server/.env
 # Logs
 *.log
 
+# SQL files (project uses MongoDB)
+*.sql
+
 # OS generated files
 .DS_Store
 Thumbs.db
