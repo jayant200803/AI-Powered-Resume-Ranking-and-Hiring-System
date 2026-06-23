@@ -6,6 +6,19 @@ create job postings, view all job applicants, and run an AI-based ranking system
 resumes using TF-IDF, Cosine Similarity, and Skill Matching through a FastAPI engine.
 
 ------------------------------------------------------------
+🌐 LIVE DEMO
+------------------------------------------------------------
+
+| Service          | URL                                                                 |
+|------------------|---------------------------------------------------------------------|
+| Frontend (React) | https://ai-powered-resume-ranking-and-hiring-8o80.onrender.com      |
+| Backend (Node)   | https://ai-powered-resume-ranking-and-hiring.onrender.com           |
+| AI Engine (Python FastAPI) | https://ai-powered-resume-ranking-and-hiring-ahhi.onrender.com |
+
+Note: Free tier services spin down after 15 min of inactivity.
+First request after idle takes 30–60 seconds — just wait and refresh.
+
+------------------------------------------------------------
 🚀 FEATURES
 ------------------------------------------------------------
 
@@ -159,16 +172,20 @@ STEP 1 — Deploy the Node.js API
   CLIENT_URL           | (leave blank for now)
   SERVER_URL           | (leave blank for now)
 
-  After deploy finishes, copy the URL (e.g. https://hiring-api.onrender.com).
+  After deploy finishes, copy the URL.
   Come back to the Environment tab and set:
-    SERVER_URL = https://hiring-api.onrender.com
+    SERVER_URL = <your-node-service-url>
+
+  Actual deployed URL: https://ai-powered-resume-ranking-and-hiring.onrender.com
 
 STEP 2 — Update Google Cloud Console
 
   console.cloud.google.com → APIs & Services → Credentials
   → your OAuth 2.0 Client ID → Authorized redirect URIs → Add:
-    https://hiring-api.onrender.com/auth/google/callback
+    <your-node-service-url>/auth/google/callback
   → Save
+
+  Actual callback URL used: https://ai-powered-resume-ranking-and-hiring.onrender.com/auth/google/callback
 
 STEP 3 — Deploy the Python Ranking Server
 
@@ -188,10 +205,12 @@ STEP 3 — Deploy the Python Ranking Server
   Key              | Value
   -----------------|----------------------------------------------
   MONGODB_URI      | same Atlas connection string
-  NODE_SERVER_URL  | https://hiring-api.onrender.com
+  NODE_SERVER_URL  | <your-node-service-url>
   FRONTEND_ORIGIN  | (leave blank for now)
 
-  After deploy finishes, copy the URL (e.g. https://hiring-ranking.onrender.com).
+  After deploy finishes, copy the URL.
+
+  Actual deployed URL: https://ai-powered-resume-ranking-and-hiring-ahhi.onrender.com
 
 STEP 4 — Deploy the React Frontend
 
@@ -208,26 +227,28 @@ STEP 4 — Deploy the React Frontend
 
   Key                    | Value
   -----------------------|----------------------------------------------
-  REACT_APP_API_URL      | https://hiring-api.onrender.com
-  REACT_APP_RANKING_URL  | https://hiring-ranking.onrender.com
+  REACT_APP_API_URL      | <your-node-service-url>
+  REACT_APP_RANKING_URL  | <your-python-service-url>
 
-  After deploy finishes, copy the URL (e.g. https://hiring-app.onrender.com).
+  After deploy finishes, copy the URL.
+
+  Actual deployed URL: https://ai-powered-resume-ranking-and-hiring-8o80.onrender.com
 
 STEP 5 — Fill the Two Remaining Environment Variables
 
-  Node service (hiring-api) → Environment:
-    CLIENT_URL = https://hiring-app.onrender.com
+  Node service → Environment:
+    CLIENT_URL = <your-react-site-url>
   → Save (auto-redeploys)
 
-  Python service (hiring-ranking) → Environment:
-    FRONTEND_ORIGIN = https://hiring-app.onrender.com
+  Python service → Environment:
+    FRONTEND_ORIGIN = <your-react-site-url>
   → Save (auto-redeploys)
 
 STEP 6 — Verify
 
   Test                                           | Expected result
   -----------------------------------------------|----------------------------------
-  Visit https://hiring-app.onrender.com          | Landing page loads
+  Visit your React site URL                      | Landing page loads
   Click "Sign in with Google"                    | Redirects to Google, then /choose-role
   Employer: post a job → view applicants → Rank  | Returns ranked list
   Click Report                                   | HTML report opens with resume links
