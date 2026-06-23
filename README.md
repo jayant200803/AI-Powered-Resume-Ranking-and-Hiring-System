@@ -129,6 +129,114 @@ python -m uvicorn app.main:app --reload --port 8000
 Note: Use `python -m uvicorn` (not bare `uvicorn`) to avoid PATH issues on Windows.
 
 ------------------------------------------------------------
+☁️ RENDER DEPLOYMENT
+------------------------------------------------------------
+
+Deploy in this exact order: Node → Python → React
+
+STEP 1 — Deploy the Node.js API
+
+  render.com → New + → Web Service → Connect repository
+
+  Field             | Value
+  ------------------|--------------------------------------------
+  Name              | hiring-api
+  Root Directory    | server
+  Runtime           | Node
+  Build Command     | npm install
+  Start Command     | node server.js
+  Instance Type     | Free
+
+  Environment Variables:
+
+  Key                  | Value
+  ---------------------|----------------------------------------------
+  NODE_ENV             | production
+  MONGODB_URI          | mongodb+srv://... (your Atlas connection string)
+  SESSION_SECRET       | any long random string
+  GOOGLE_CLIENT_ID     | from Google Cloud Console
+  GOOGLE_CLIENT_SECRET | from Google Cloud Console
+  CLIENT_URL           | (leave blank for now)
+  SERVER_URL           | (leave blank for now)
+
+  After deploy finishes, copy the URL (e.g. https://hiring-api.onrender.com).
+  Come back to the Environment tab and set:
+    SERVER_URL = https://hiring-api.onrender.com
+
+STEP 2 — Update Google Cloud Console
+
+  console.cloud.google.com → APIs & Services → Credentials
+  → your OAuth 2.0 Client ID → Authorized redirect URIs → Add:
+    https://hiring-api.onrender.com/auth/google/callback
+  → Save
+
+STEP 3 — Deploy the Python Ranking Server
+
+  New + → Web Service → same repository
+
+  Field             | Value
+  ------------------|--------------------------------------------
+  Name              | hiring-ranking
+  Root Directory    | ranking_server
+  Runtime           | Python 3
+  Build Command     | bash build.sh
+  Start Command     | python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+  Instance Type     | Free
+
+  Environment Variables:
+
+  Key              | Value
+  -----------------|----------------------------------------------
+  MONGODB_URI      | same Atlas connection string
+  NODE_SERVER_URL  | https://hiring-api.onrender.com
+  FRONTEND_ORIGIN  | (leave blank for now)
+
+  After deploy finishes, copy the URL (e.g. https://hiring-ranking.onrender.com).
+
+STEP 4 — Deploy the React Frontend
+
+  New + → Static Site → same repository
+
+  Field             | Value
+  ------------------|--------------------------------------------
+  Name              | hiring-app
+  Root Directory    | client
+  Build Command     | npm install && npm run build
+  Publish Directory | build
+
+  Environment Variables:
+
+  Key                    | Value
+  -----------------------|----------------------------------------------
+  REACT_APP_API_URL      | https://hiring-api.onrender.com
+  REACT_APP_RANKING_URL  | https://hiring-ranking.onrender.com
+
+  After deploy finishes, copy the URL (e.g. https://hiring-app.onrender.com).
+
+STEP 5 — Fill the Two Remaining Environment Variables
+
+  Node service (hiring-api) → Environment:
+    CLIENT_URL = https://hiring-app.onrender.com
+  → Save (auto-redeploys)
+
+  Python service (hiring-ranking) → Environment:
+    FRONTEND_ORIGIN = https://hiring-app.onrender.com
+  → Save (auto-redeploys)
+
+STEP 6 — Verify
+
+  Test                                           | Expected result
+  -----------------------------------------------|----------------------------------
+  Visit https://hiring-app.onrender.com          | Landing page loads
+  Click "Sign in with Google"                    | Redirects to Google, then /choose-role
+  Employer: post a job → view applicants → Rank  | Returns ranked list
+  Click Report                                   | HTML report opens with resume links
+  Job seeker: submit form → Download Resume      | PDF downloads
+
+  Free tier note: Services spin down after 15 min of inactivity.
+  The first request after idle takes ~30–60 seconds. This is normal on the free plan.
+
+------------------------------------------------------------
 🗄️ DATABASE — MONGODB COLLECTIONS
 ------------------------------------------------------------
 
