@@ -18,6 +18,9 @@ await connectDB();
 
 const app = express();
 
+// Trust Render's reverse proxy so req.secure is correct and secure cookies are set properly
+app.set('trust proxy', 1);
+
 // Middleware Setup
 app.use(cors({
     origin: process.env.CLIENT_URL || "http://localhost:3000",
